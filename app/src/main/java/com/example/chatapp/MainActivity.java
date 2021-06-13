@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private FirebaseAuth mAuth;
 
+    //This is for commit
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
