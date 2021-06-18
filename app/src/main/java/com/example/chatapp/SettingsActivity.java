@@ -97,7 +97,6 @@ public class SettingsActivity extends AppCompatActivity {
 
             Uri ImageUri = data.getData();
 
-
         }
 
     }
