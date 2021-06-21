@@ -22,6 +22,7 @@ public class TabsAccessorAdapter extends FragmentStateAdapter {
         switch (position) {
             case 1 : return new GroupsFragment();
             case 2 : return new ContactsFragment();
+            case 3 : return new RequestsFragment();
         }
 
         return new ChatsFragment();
@@ -29,6 +30,6 @@ public class TabsAccessorAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 3;
+        return 4;
     }
 }
