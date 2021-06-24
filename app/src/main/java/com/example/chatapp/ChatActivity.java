@@ -165,6 +165,26 @@ public class ChatActivity extends AppCompatActivity
 
 
 
+    // onDestroy() and onPause() will prevent from duplicating messages when the device is locked or screen turned off
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        messagesList.clear();
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        messagesList.clear();
+    }
+
+
+
+
+
+
+
     private void SendMessage()
     {
         String messageText = MessageInputText.getText().toString();
