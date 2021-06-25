@@ -138,7 +138,29 @@ public class ChatActivity extends AppCompatActivity
 
                         messageAdapter.notifyDataSetChanged();
 
-                        userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
+                        //userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
+
+
+
+
+                        //The below code will scroll the messages to the bottom along with the keyboard appears
+                        userMessagesList.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                                @Override
+                                public void onLayoutChange(View v,
+                                                           int left, int top, int right, int bottom,
+                                                           int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                                    if (bottom < oldBottom) {
+                                        userMessagesList.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                userMessagesList.smoothScrollToPosition(
+                                                        userMessagesList.getAdapter().getItemCount() - 1);
+                                            }
+                                        },0);
+                                    }
+                                }
+                            });
+
                     }
 
                     @Override
