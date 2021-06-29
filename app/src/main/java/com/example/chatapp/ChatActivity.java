@@ -26,9 +26,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +64,9 @@ public class ChatActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        //updateUserStatus("online");
+
         setContentView(R.layout.activity_chat);
 
 
@@ -96,8 +102,11 @@ public class ChatActivity extends AppCompatActivity
 
     private void IntializeControllers()
     {
+
         ChatToolBar = (Toolbar) findViewById(R.id.chat_toolbar);
         setSupportActionBar(ChatToolBar);
+
+        updateUserStatus("online");
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -119,15 +128,53 @@ public class ChatActivity extends AppCompatActivity
         linearLayoutManager = new LinearLayoutManager(this);
         userMessagesList.setLayoutManager(linearLayoutManager);
         userMessagesList.setAdapter(messageAdapter);
+
+        DisplayLastSeen();
     }
 
+
+    private void DisplayLastSeen() {
+
+        RootRef.child("Users").child(messageReceiverID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.child("userState").hasChild("state")) {
+
+                    String state = dataSnapshot.child("userState").child("state").getValue().toString();
+                    String date = dataSnapshot.child("userState").child("date").getValue().toString();
+                    String time = dataSnapshot.child("userState").child("time").getValue().toString();
+
+                    if(state.equals("online")) {
+
+                        userLastSeen.setText("Online");
+                    }
+                    else if(state.equals("offline")) {
+
+                        userLastSeen.setText("Last Seen: " + date + " " + time);
+                    }
+                }
+                else {
+
+                    userLastSeen.setText("Offline");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     @Override
     protected void onStart()
     {
         super.onStart();
 
-        RootRef.child("Messages").child(messageSenderID).child(messageReceiverID)
+        //updateUserStatus("online");
+
+        RootRef.child("Messages").child(messageReceiverID).child(messageReceiverID)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s)
@@ -252,5 +299,34 @@ public class ChatActivity extends AppCompatActivity
                 }
             });
         }
+    }
+
+
+
+
+
+    private void updateUserStatus(String state) {
+
+        String saveCurrentTime, saveCurrentDate;
+
+        Calendar calendar = Calendar.getInstance();
+
+        SimpleDateFormat currentDate = new SimpleDateFormat("MMM dd, yyyy");
+        saveCurrentDate = currentDate.format(calendar.getTime());
+
+        SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
+        saveCurrentTime = currentTime.format(calendar.getTime());
+
+        HashMap<String, Object> onlineStateMap = new HashMap<>();
+        onlineStateMap.put("time", saveCurrentTime);
+        onlineStateMap.put("date", saveCurrentDate);
+        onlineStateMap.put("state", state);
+
+
+        String currentUserID = mAuth.getCurrentUser().getUid();
+
+        RootRef.child("Users").child(currentUserID).child("userState")
+                .updateChildren(onlineStateMap);
+
     }
 }

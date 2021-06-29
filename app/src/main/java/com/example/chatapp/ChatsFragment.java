@@ -23,6 +23,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatsFragment extends Fragment {
@@ -30,7 +34,7 @@ public class ChatsFragment extends Fragment {
     private View PrivateChatsView;
     private RecyclerView chatsList;
 
-    private DatabaseReference ChatsRef, UsersRef;
+    private DatabaseReference ChatsRef, UsersRef, RootRef;
     private FirebaseAuth mAuth;
     private String currentUserID;
 
@@ -63,6 +67,7 @@ public class ChatsFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+
         FirebaseRecyclerOptions<Contacts> options =
                 new FirebaseRecyclerOptions.Builder<Contacts>()
                 .setQuery(ChatsRef, Contacts.class)
@@ -90,11 +95,34 @@ public class ChatsFragment extends Fragment {
 
                                     }
 
+
                                     final String retName = dataSnapshot.child("name").getValue().toString();
                                     final String retStatus = dataSnapshot.child("status").getValue().toString();
 
                                     holder.userName.setText(retName);
-                                    holder.userStatus.setText("Last Seen: " + "\n" + "Date " + " Time");
+
+
+                                    if(dataSnapshot.child("userState").hasChild("state")) {
+
+                                        String state = dataSnapshot.child("userState").child("state").getValue().toString();
+                                        String date = dataSnapshot.child("userState").child("date").getValue().toString();
+                                        String time = dataSnapshot.child("userState").child("time").getValue().toString();
+
+                                        if(state.equals("online")) {
+
+                                            holder.userStatus.setText("Online");
+                                        }
+                                        else if(state.equals("offline")) {
+
+                                            holder.userStatus.setText("Last Seen: " + date + " " + time);
+                                        }
+                                    }
+                                    else {
+
+                                        holder.userStatus.setText("Offline");
+                                    }
+
+
 
                                     holder.itemView.setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -147,4 +175,5 @@ public class ChatsFragment extends Fragment {
             userName = itemView.findViewById(R.id.user_profile_name);
         }
     }
+
 }
