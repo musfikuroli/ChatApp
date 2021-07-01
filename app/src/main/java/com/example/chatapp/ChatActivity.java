@@ -65,7 +65,6 @@ public class ChatActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-        //updateUserStatus("online");
 
         setContentView(R.layout.activity_chat);
 
@@ -106,8 +105,6 @@ public class ChatActivity extends AppCompatActivity
         ChatToolBar = (Toolbar) findViewById(R.id.chat_toolbar);
         setSupportActionBar(ChatToolBar);
 
-        updateUserStatus("online");
-
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
@@ -130,6 +127,7 @@ public class ChatActivity extends AppCompatActivity
         userMessagesList.setAdapter(messageAdapter);
 
         DisplayLastSeen();
+        updateUserStatus("online");
     }
 
 
@@ -172,9 +170,7 @@ public class ChatActivity extends AppCompatActivity
     {
         super.onStart();
 
-        //updateUserStatus("online");
-
-        RootRef.child("Messages").child(messageReceiverID).child(messageReceiverID)
+        RootRef.child("Messages").child(messageSenderID).child(messageReceiverID)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s)
@@ -237,17 +233,29 @@ public class ChatActivity extends AppCompatActivity
 
 
      //onDestroy() and onPause() will prevent from duplicating messages when the device is locked or screen turned off
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        messagesList.clear();
-    }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("ChatActivity: On Resume");
+        updateUserStatus("online");
+
+    }
 
     @Override
     protected void onPause() {
         super.onPause();
+        System.out.println("ChatActivity: On Pause");
         messagesList.clear();
+        updateUserStatus("offline");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        System.out.println("ChatActivity: On Stop");
+
     }
 
 

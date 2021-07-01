@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        System.out.println("MainActivity: Onstart");
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -145,6 +146,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateUserStatus("online");
+    }
 
     @Override
     protected void onDestroy() {
