@@ -170,6 +170,7 @@ public class ChatActivity extends AppCompatActivity
     {
         super.onStart();
 
+        //Shows new messages when new message child is added
         RootRef.child("Messages").child(messageSenderID).child(messageReceiverID)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
